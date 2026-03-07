@@ -1,880 +1,880 @@
-<!-- ===== FLASHCARDS — HOLANDÉS NAWAR (Embebido, sin <head>) ===== -->
-<!-- SDK de Supabase (si no está ya cargado por el padre) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!DOCTYPE html>
+<html lang="es">
 
-<style>
-    /* ── Variables ──────────────────────────────────────────── */
-    :root {
-        --fc-blue: #2563eb;
-        --fc-blue-dark: #1d4ed8;
-        --fc-blue-light: #eff6ff;
-        --fc-blue-mid: #dbeafe;
-        --fc-text: #0f172a;
-        --fc-muted: #64748b;
-        --fc-border: #e2e8f0;
-        --fc-white: #ffffff;
-        --fc-bg: #f8fafc;
-        --fc-green: #22c55e;
-        --fc-red: #ef4444;
-        --fc-card-shadow: 0 20px 60px -10px rgba(37, 99, 235, 0.18), 0 4px 16px rgba(0, 0, 0, 0.06);
-        --fc-radius: 1.25rem;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - Holandés Nawar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    /* ── Reset local ─────────────────────────────────────────── */
-    #fc-root * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    #fc-root {
-        font-family: 'Inter', system-ui, sans-serif;
-        color: var(--fc-text);
-    }
-
-    /* ── Layout principal ───────────────────────────────────── */
-    #fc-root {
-        max-width: 560px;
-        margin: 0 auto;
-        padding: 2rem 1rem 3rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    /* ── Hero title ─────────────────────────────────────────── */
-    #fc-root .fc-header {
-        text-align: center;
-    }
-
-    #fc-root .fc-header .fc-icon-wrap {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--fc-blue), #60a5fa);
-        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
-        margin-bottom: .75rem;
-    }
-
-    #fc-root .fc-header .fc-icon-wrap svg {
-        width: 28px;
-        height: 28px;
-        stroke: #fff;
-        fill: none;
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    #fc-root .fc-header h1 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: var(--fc-text);
-    }
-
-    #fc-root .fc-header p {
-        font-size: .875rem;
-        color: var(--fc-muted);
-        margin-top: .25rem;
-    }
-
-    /* ── Tip Banner ─────────────────────────────────────────── */
-    #fc-root .fc-tip {
-        background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
-        border: 1px solid #bfdbfe;
-        border-radius: var(--fc-radius);
-        padding: 1rem 1.25rem;
-        display: flex;
-        gap: .875rem;
-        align-items: flex-start;
-    }
-
-    #fc-root .fc-tip .tip-icon {
-        flex-shrink: 0;
-        width: 36px;
-        height: 36px;
-        background: var(--fc-blue);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    #fc-root .fc-tip .tip-icon svg {
-        width: 18px;
-        height: 18px;
-        stroke: #fff;
-        fill: none;
-        stroke-width: 2.2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    #fc-root .fc-tip .tip-body strong {
-        display: block;
-        font-size: .8125rem;
-        font-weight: 700;
-        color: var(--fc-blue-dark);
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        margin-bottom: .3rem;
-    }
-
-    #fc-root .fc-tip .tip-body p {
-        font-size: .8125rem;
-        color: #334155;
-        line-height: 1.55;
-    }
-
-    /* ── Selectors ──────────────────────────────────────────── */
-    #fc-root .fc-selectors {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .75rem;
-    }
-
-    #fc-root .fc-sel-wrap {
-        background: var(--fc-white);
-        border: 1.5px solid var(--fc-border);
-        border-radius: var(--fc-radius);
-        padding: .625rem .875rem;
-        display: flex;
-        flex-direction: column;
-        gap: .2rem;
-        transition: border-color .2s, box-shadow .2s;
-    }
-
-    #fc-root .fc-sel-wrap:focus-within {
-        border-color: var(--fc-blue);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
-    }
-
-    #fc-root .fc-sel-wrap label {
-        font-size: .6875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .06em;
-        color: var(--fc-blue);
-    }
-
-    #fc-root .fc-sel-wrap select {
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: .875rem;
-        font-weight: 600;
-        color: var(--fc-text);
-        width: 100%;
-        cursor: pointer;
-        font-family: inherit;
-    }
-
-    /* ── Card 3D ────────────────────────────────────────────── */
-    #fc-root .fc-card-wrap {
-        perspective: 1200px;
-    }
-
-    #fc-root .fc-card-inner {
-        position: relative;
-        width: 100%;
-        height: 320px;
-        transition: transform .65s cubic-bezier(.4, 0, .2, 1);
-        transform-style: preserve-3d;
-        cursor: pointer;
-    }
-
-    #fc-root .fc-card-inner.flipped {
-        transform: rotateY(180deg);
-    }
-
-    #fc-root .fc-face {
-        position: absolute;
-        inset: 0;
-        border-radius: 1.75rem;
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        text-align: center;
-        box-shadow: var(--fc-card-shadow);
-    }
-
-    #fc-root .fc-face-front {
-        background: var(--fc-white);
-        border: 1.5px solid var(--fc-border);
-    }
-
-    #fc-root .fc-face-back {
-        background: linear-gradient(135deg, var(--fc-blue) 0%, #1e40af 100%);
-        color: #fff;
-        transform: rotateY(180deg);
-    }
-
-    #fc-root .fc-lang-label {
-        font-size: .6875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        margin-bottom: 1rem;
-    }
-
-    #fc-root .fc-face-front .fc-lang-label {
-        color: var(--fc-blue);
-    }
-
-    #fc-root .fc-face-back .fc-lang-label {
-        color: rgba(255, 255, 255, .65);
-    }
-
-    #fc-root .fc-word {
-        font-size: 2.5rem;
-        font-weight: 900;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-    }
-
-    #fc-root .fc-face-front .fc-word {
-        color: var(--fc-text);
-    }
-
-    #fc-root .fc-face-back .fc-word {
-        color: #fff;
-    }
-
-    #fc-root .fc-phonetic {
-        font-size: .9rem;
-        font-style: italic;
-        color: #94a3b8;
-        margin-top: .6rem;
-    }
-
-    /* audio btn */
-    #fc-root .fc-audio-btn {
-        position: absolute;
-        bottom: 1.25rem;
-        right: 1.25rem;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--fc-blue-light);
-        color: var(--fc-blue);
-        transition: background .2s, transform .15s;
-    }
-
-    #fc-root .fc-audio-btn:hover {
-        background: var(--fc-blue-mid);
-        transform: scale(1.1);
-    }
-
-    #fc-root .fc-audio-btn:active {
-        transform: scale(.93);
-    }
-
-    #fc-root .fc-audio-btn svg {
-        width: 20px;
-        height: 20px;
-        fill: var(--fc-blue);
-    }
-
-    /* flip hint */
-    #fc-root .fc-flip-hint {
-        text-align: center;
-        font-size: .75rem;
-        color: #94a3b8;
-        letter-spacing: .04em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: .35rem;
-    }
-
-    #fc-root .fc-flip-hint svg {
-        width: 13px;
-        height: 13px;
-        stroke: #94a3b8;
-        fill: none;
-        stroke-width: 2;
-        stroke-linecap: round;
-    }
-
-    /* ── Controls ───────────────────────────────────────────── */
-    #fc-root .fc-nav {
-        display: grid;
-        grid-template-columns: 48px 1fr 1fr 48px;
-        gap: .625rem;
-        align-items: center;
-    }
-
-    /* Arrow btns */
-    #fc-root .fc-btn-arrow {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        border: 1.5px solid var(--fc-border);
-        background: var(--fc-white);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background .2s, border-color .2s, transform .15s;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-    }
-
-    #fc-root .fc-btn-arrow:hover {
-        background: var(--fc-bg);
-        border-color: #cbd5e1;
-        transform: scale(1.06);
-    }
-
-    #fc-root .fc-btn-arrow:active {
-        transform: scale(.92);
-    }
-
-    #fc-root .fc-btn-arrow svg {
-        width: 18px;
-        height: 18px;
-        stroke: #475569;
-        fill: none;
-        stroke-width: 2.5;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    /* Action btns */
-    #fc-root .fc-btn-known,
-    #fc-root .fc-btn-repeat {
-        height: 52px;
-        border: none;
-        border-radius: var(--fc-radius);
-        font-size: .9rem;
-        font-weight: 700;
-        font-family: inherit;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: .5rem;
-        transition: transform .15s, box-shadow .2s, filter .2s;
-    }
-
-    #fc-root .fc-btn-known {
-        background: linear-gradient(135deg, var(--fc-green), #16a34a);
-        color: #fff;
-        box-shadow: 0 6px 20px rgba(34, 197, 94, .3);
-    }
-
-    #fc-root .fc-btn-known:hover {
-        filter: brightness(1.08);
-        box-shadow: 0 8px 24px rgba(34, 197, 94, .4);
-    }
-
-    #fc-root .fc-btn-known:active {
-        transform: scale(.95);
-    }
-
-    #fc-root .fc-btn-repeat {
-        background: #f1f5f9;
-        color: #475569;
-        border: 1.5px solid var(--fc-border);
-    }
-
-    #fc-root .fc-btn-repeat:hover {
-        background: #e2e8f0;
-    }
-
-    #fc-root .fc-btn-repeat:active {
-        transform: scale(.95);
-    }
-
-    #fc-root .fc-btn-known svg,
-    #fc-root .fc-btn-repeat svg {
-        width: 17px;
-        height: 17px;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 2.2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    /* ── Empty state ────────────────────────────────────────── */
-    #fc-root .fc-empty {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: .75rem;
-        padding: 3rem 1rem;
-    }
-
-    #fc-root .fc-empty.visible {
-        display: flex;
-    }
-
-    #fc-root .fc-empty .fc-empty-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: #f1f5f9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    #fc-root .fc-empty .fc-empty-icon svg {
-        width: 28px;
-        height: 28px;
-        stroke: #94a3b8;
-        fill: none;
-        stroke-width: 1.8;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    #fc-root .fc-empty h3 {
-        font-size: 1.1rem;
-        font-weight: 800;
-    }
-
-    #fc-root .fc-empty p {
-        font-size: .875rem;
-        color: var(--fc-muted);
-    }
-
-    /* ── Loading spinner ────────────────────────────────────── */
-    #fc-root .fc-loading {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        gap: .75rem;
-        padding: 3rem 1rem;
-    }
-
-    #fc-root .fc-loading.visible {
-        display: flex;
-    }
-
-    @keyframes fc-spin {
-        to {
-            transform: rotate(360deg);
+    <style>
+        /* ── Reset & Base ───────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-    }
 
-    #fc-root .fc-spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid var(--fc-blue-mid);
-        border-top-color: var(--fc-blue);
-        border-radius: 50%;
-        animation: fc-spin .7s linear infinite;
-    }
+        html,
+        body {
+            min-height: 100%;
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    #fc-root .fc-loading p {
-        font-size: .8125rem;
-        font-weight: 600;
-        color: var(--fc-muted);
-        letter-spacing: .05em;
-        text-transform: uppercase;
-    }
+        /* ── Variables ──────────────────────────────────────── */
+        :root {
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --blue-light: #eff6ff;
+            --blue-mid: #dbeafe;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --bg: #f8fafc;
+            --green: #22c55e;
+            --card-shadow: 0 20px 60px -10px rgba(37, 99, 235, 0.18), 0 4px 16px rgba(0, 0, 0, 0.06);
+            --radius: 1.25rem;
+        }
 
-    /* ── Modal ──────────────────────────────────────────────── */
-    #fc-root .fc-modal-bg {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, .55);
-        backdrop-filter: blur(6px);
-        z-index: 9999;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-    }
+        /* ── Layout ─────────────────────────────────────────── */
+        #fc-root {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 2.5rem 1.25rem 4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
 
-    #fc-root .fc-modal-bg.visible {
-        display: flex;
-    }
+        /* ── Header ─────────────────────────────────────────── */
+        .fc-header {
+            text-align: center;
+        }
 
-    #fc-root .fc-modal {
-        background: var(--fc-white);
-        border-radius: 2rem;
-        padding: 2.5rem 2rem;
-        max-width: 400px;
-        width: 100%;
-        text-align: center;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, .18);
-    }
+        .fc-icon-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), #60a5fa);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.28);
+            margin-bottom: .875rem;
+        }
 
-    #fc-root .fc-modal .modal-emoji {
-        font-size: 3rem;
-        display: block;
-        margin-bottom: 1rem;
-    }
+        .fc-icon-wrap svg {
+            width: 28px;
+            height: 28px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
-    #fc-root .fc-modal h2 {
-        font-size: 1.5rem;
-        font-weight: 900;
-        margin-bottom: .5rem;
-    }
+        .fc-header h1 {
+            font-size: 1.75rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+        }
 
-    #fc-root .fc-modal p {
-        color: var(--fc-muted);
-        margin-bottom: 1.75rem;
-        font-size: .9rem;
-    }
+        .fc-header p {
+            font-size: .9rem;
+            color: var(--muted);
+            margin-top: .3rem;
+        }
 
-    #fc-root .fc-modal-btns {
-        display: flex;
-        flex-direction: column;
-        gap: .625rem;
-    }
+        /* ── Tip Banner ──────────────────────────────────────── */
+        .fc-tip {
+            background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+            display: flex;
+            gap: .875rem;
+            align-items: flex-start;
+        }
 
-    #fc-root .fc-modal-btns button {
-        height: 52px;
-        border: none;
-        border-radius: var(--fc-radius);
-        font-size: .9375rem;
-        font-weight: 700;
-        font-family: inherit;
-        cursor: pointer;
-        transition: filter .2s, transform .15s;
-    }
+        .tip-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background: var(--blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    #fc-root .fc-modal-btns .btn-primary {
-        background: var(--fc-blue);
-        color: #fff;
-        box-shadow: 0 6px 20px rgba(37, 99, 235, .3);
-    }
+        .tip-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
-    #fc-root .fc-modal-btns .btn-primary:hover {
-        filter: brightness(1.1);
-    }
+        .tip-body strong {
+            display: block;
+            font-size: .8rem;
+            font-weight: 700;
+            color: var(--blue-dark);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: .3rem;
+        }
 
-    #fc-root .fc-modal-btns .btn-secondary {
-        background: #f1f5f9;
-        color: #475569;
-    }
+        .tip-body p {
+            font-size: .8125rem;
+            color: #334155;
+            line-height: 1.55;
+        }
 
-    #fc-root .fc-modal-btns .btn-secondary:hover {
-        background: #e2e8f0;
-    }
+        /* ── Selectors ──────────────────────────────────────── */
+        .fc-selectors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+        }
 
-    /* ── Counter chip ───────────────────────────────────────── */
-    #fc-root .fc-counter {
-        text-align: center;
-        font-size: .8rem;
-        font-weight: 600;
-        color: var(--fc-muted);
-        letter-spacing: .04em;
-    }
+        .fc-sel-wrap {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: .625rem .875rem;
+            display: flex;
+            flex-direction: column;
+            gap: .2rem;
+            transition: border-color .2s, box-shadow .2s;
+        }
 
-    #fc-root .fc-counter span {
-        color: var(--fc-blue);
-        font-weight: 800;
-    }
-</style>
+        .fc-sel-wrap:focus-within {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+        }
 
-<div id="fc-root">
+        .fc-sel-wrap label {
+            font-size: .6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--blue);
+        }
 
-    <!-- Header -->
-    <div class="fc-header">
-        <div class="fc-icon-wrap">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="5" width="14" height="14" rx="2" />
-                <path d="M8 3h14v14" />
-            </svg>
+        .fc-sel-wrap select {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: .875rem;
+            font-weight: 600;
+            color: var(--text);
+            width: 100%;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* ── Card 3D ─────────────────────────────────────────── */
+        .fc-card-wrap {
+            perspective: 1200px;
+        }
+
+        .fc-card-inner {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            transition: transform .65s cubic-bezier(.4, 0, .2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .fc-card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .fc-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 1.75rem;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+
+        .fc-face-front {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+        }
+
+        .fc-face-back {
+            background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
+            color: #fff;
+            transform: rotateY(180deg);
+        }
+
+        .fc-lang-label {
+            font-size: .6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 1rem;
+        }
+
+        .fc-face-front .fc-lang-label {
+            color: var(--blue);
+        }
+
+        .fc-face-back .fc-lang-label {
+            color: rgba(255, 255, 255, .65);
+        }
+
+        .fc-word {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .fc-face-front .fc-word {
+            color: var(--text);
+        }
+
+        .fc-face-back .fc-word {
+            color: #fff;
+        }
+
+        .fc-phonetic {
+            font-size: .9rem;
+            font-style: italic;
+            color: #94a3b8;
+            margin-top: .6rem;
+        }
+
+        /* Audio button */
+        .fc-audio-btn {
+            position: absolute;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--blue-light);
+            color: var(--blue);
+            transition: background .2s, transform .15s;
+        }
+
+        .fc-audio-btn:hover {
+            background: var(--blue-mid);
+            transform: scale(1.1);
+        }
+
+        .fc-audio-btn:active {
+            transform: scale(.93);
+        }
+
+        .fc-audio-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--blue);
+        }
+
+        /* Flip hint */
+        .fc-flip-hint {
+            text-align: center;
+            font-size: .75rem;
+            color: #94a3b8;
+            letter-spacing: .04em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .35rem;
+        }
+
+        .fc-flip-hint svg {
+            width: 13px;
+            height: 13px;
+            stroke: #94a3b8;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        /* ── Controls ────────────────────────────────────────── */
+        .fc-nav {
+            display: grid;
+            grid-template-columns: 48px 1fr 1fr 48px;
+            gap: .625rem;
+            align-items: center;
+        }
+
+        .fc-btn-arrow {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+        }
+
+        .fc-btn-arrow:hover {
+            background: var(--bg);
+            transform: scale(1.06);
+        }
+
+        .fc-btn-arrow:active {
+            transform: scale(.92);
+        }
+
+        .fc-btn-arrow svg {
+            width: 18px;
+            height: 18px;
+            stroke: #475569;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .fc-btn-known,
+        .fc-btn-repeat {
+            height: 52px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: .9rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            transition: transform .15s, box-shadow .2s, filter .2s;
+        }
+
+        .fc-btn-known {
+            background: linear-gradient(135deg, var(--green), #16a34a);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, .3);
+        }
+
+        .fc-btn-known:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, .4);
+        }
+
+        .fc-btn-known:active {
+            transform: scale(.95);
+        }
+
+        .fc-btn-repeat {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1.5px solid var(--border);
+        }
+
+        .fc-btn-repeat:hover {
+            background: #e2e8f0;
+        }
+
+        .fc-btn-repeat:active {
+            transform: scale(.95);
+        }
+
+        .fc-btn-known svg,
+        .fc-btn-repeat svg {
+            width: 17px;
+            height: 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ── Empty & Loading ─────────────────────────────────── */
+        .fc-empty,
+        .fc-loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: .75rem;
+            padding: 3rem 1rem;
+        }
+
+        .fc-empty.visible,
+        .fc-loading.visible {
+            display: flex;
+        }
+
+        .fc-empty-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fc-empty-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #94a3b8;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .fc-empty h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .fc-empty p {
+            font-size: .875rem;
+            color: var(--muted);
+        }
+
+        @keyframes fc-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fc-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--blue-mid);
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            animation: fc-spin .7s linear infinite;
+        }
+
+        .fc-loading p {
+            font-size: .8125rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        /* ── Counter ─────────────────────────────────────────── */
+        .fc-counter {
+            text-align: center;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: .04em;
+        }
+
+        .fc-counter span {
+            color: var(--blue);
+            font-weight: 800;
+        }
+
+        /* ── Modal ───────────────────────────────────────────── */
+        .fc-modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .55);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .fc-modal-bg.visible {
+            display: flex;
+        }
+
+        .fc-modal {
+            background: var(--white);
+            border-radius: 2rem;
+            padding: 2.5rem 2rem;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .18);
+        }
+
+        .modal-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .fc-modal h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: .5rem;
+        }
+
+        .fc-modal p {
+            color: var(--muted);
+            margin-bottom: 1.75rem;
+            font-size: .9rem;
+        }
+
+        .fc-modal-btns {
+            display: flex;
+            flex-direction: column;
+            gap: .625rem;
+        }
+
+        .fc-modal-btns button {
+            height: 52px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: .9375rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: filter .2s, transform .15s;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, .3);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="fc-root">
+
+        <!-- Header -->
+        <div class="fc-header">
+            <div class="fc-icon-wrap">
+                <svg viewBox="0 0 24 24">
+                    <rect x="2" y="5" width="14" height="14" rx="2" />
+                    <path d="M8 3h14v14" />
+                </svg>
+            </div>
+            <h1>Flashcards</h1>
+            <p>Practica el vocabulario de tu lección</p>
         </div>
-        <h1>Flashcards</h1>
-        <p>Practica el vocabulario de tu lección</p>
-    </div>
 
-    <!-- Tip banner -->
-    <div class="fc-tip">
-        <div class="tip-icon">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-        </div>
-        <div class="tip-body">
-            <strong>¿Cómo funciona?</strong>
-            <p>Elige tu módulo y clase. Verás la palabra en holandés — <strong>haz clic en la tarjeta</strong> para ver
-                la traducción. Después marca si la sabías ✓ o si quieres repetirla ↺.</p>
-        </div>
-    </div>
-
-    <!-- Selectors -->
-    <div class="fc-selectors">
-        <div class="fc-sel-wrap">
-            <label>Módulo</label>
-            <select id="fc-moduleSelector" onchange="fcHandleModuleChange()">
-                <option value="" disabled selected>Cargando...</option>
-            </select>
-        </div>
-        <div class="fc-sel-wrap">
-            <label>Clase</label>
-            <select id="fc-lessonSelector" onchange="fcHandleLessonChange()">
-                <option value="" disabled selected>Selecciona</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Loading -->
-    <div id="fc-loading" class="fc-loading">
-        <div class="fc-spinner"></div>
-        <p>Cargando datos...</p>
-    </div>
-
-    <!-- Empty state -->
-    <div id="fc-empty" class="fc-empty">
-        <div class="fc-empty-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-                <polyline points="13 2 13 9 20 9" />
-            </svg>
-        </div>
-        <h3>Sin palabras aún</h3>
-        <p>Esta lección no tiene contenido todavía. ¡Pronto llegará!</p>
-    </div>
-
-    <!-- Card area -->
-    <div id="fc-cardArea">
-        <!-- Counter -->
-        <div class="fc-counter" id="fc-counter"><span>1</span> de <span id="fc-total">0</span></div>
-
-        <!-- 3D Card -->
-        <div class="fc-card-wrap" style="margin-top:.75rem;">
-            <div id="fc-card" class="fc-card-inner" onclick="fcFlipCard()">
-                <!-- Front -->
-                <div class="fc-face fc-face-front">
-                    <span class="fc-lang-label">Holandés</span>
-                    <div id="fc-wordDutch" class="fc-word">---</div>
-                    <div id="fc-phonetic" class="fc-phonetic">---</div>
-                    <button class="fc-audio-btn" id="fc-audioBtn" onclick="fcPlayAudio(event)"
-                        title="Escuchar pronunciación">
-                        <svg viewBox="0 0 24 24">
-                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                        </svg>
-                    </button>
-                </div>
-                <!-- Back -->
-                <div class="fc-face fc-face-back">
-                    <span class="fc-lang-label">Español</span>
-                    <div id="fc-wordSpanish" class="fc-word">---</div>
-                </div>
+        <!-- Tip banner -->
+        <div class="fc-tip">
+            <div class="tip-icon">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+            </div>
+            <div class="tip-body">
+                <strong>¿Cómo funciona?</strong>
+                <p>Elige tu módulo y clase. Verás la palabra en holandés — <strong>haz clic en la tarjeta</strong> para
+                    ver la traducción. Después marca si la sabías ✓ o si quieres repetirla ↺.</p>
             </div>
         </div>
 
-        <!-- Flip hint -->
-        <div class="fc-flip-hint" style="margin-top:.75rem;">
-            <svg viewBox="0 0 24 24">
-                <polyline points="1 4 1 10 7 10" />
-                <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
-            </svg>
-            Toca la tarjeta para voltearla
+        <!-- Selectors -->
+        <div class="fc-selectors">
+            <div class="fc-sel-wrap">
+                <label>Módulo</label>
+                <select id="fc-moduleSelector" onchange="fcHandleModuleChange()">
+                    <option value="" disabled selected>Cargando...</option>
+                </select>
+            </div>
+            <div class="fc-sel-wrap">
+                <label>Clase</label>
+                <select id="fc-lessonSelector" onchange="fcHandleLessonChange()">
+                    <option value="" disabled selected>Selecciona</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Nav controls -->
-        <div class="fc-nav" style="margin-top:1.25rem;">
-            <button class="fc-btn-arrow" onclick="fcPrevCard()" title="Anterior">
+        <!-- Loading -->
+        <div id="fc-loading" class="fc-loading">
+            <div class="fc-spinner"></div>
+            <p>Cargando datos...</p>
+        </div>
+
+        <!-- Empty state -->
+        <div id="fc-empty" class="fc-empty">
+            <div class="fc-empty-icon">
                 <svg viewBox="0 0 24 24">
-                    <polyline points="15 18 9 12 15 6" />
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                    <polyline points="13 2 13 9 20 9" />
                 </svg>
-            </button>
-            <button class="fc-btn-known" onclick="fcMarkKnown()">
-                <svg viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12" />
-                </svg>
-                La sé
-            </button>
-            <button class="fc-btn-repeat" onclick="fcRepeatLater()">
+            </div>
+            <h3>Sin palabras aún</h3>
+            <p>Esta lección no tiene contenido todavía. ¡Pronto llegará!</p>
+        </div>
+
+        <!-- Card area -->
+        <div id="fc-cardArea" style="display:none;">
+            <!-- Counter -->
+            <div class="fc-counter" id="fc-counter"><span id="fc-current">1</span> de <span id="fc-total">0</span></div>
+
+            <!-- 3D Card -->
+            <div class="fc-card-wrap" style="margin-top:.75rem;">
+                <div id="fc-card" class="fc-card-inner" onclick="fcFlipCard()">
+                    <!-- Front -->
+                    <div class="fc-face fc-face-front">
+                        <span class="fc-lang-label">Holandés</span>
+                        <div id="fc-wordDutch" class="fc-word">---</div>
+                        <div id="fc-phonetic" class="fc-phonetic"></div>
+                        <button class="fc-audio-btn" onclick="fcPlayAudio(event)" title="Escuchar pronunciación">
+                            <svg viewBox="0 0 24 24">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Back -->
+                    <div class="fc-face fc-face-back">
+                        <span class="fc-lang-label">Español</span>
+                        <div id="fc-wordSpanish" class="fc-word">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flip hint -->
+            <div class="fc-flip-hint" style="margin-top:.75rem;">
                 <svg viewBox="0 0 24 24">
                     <polyline points="1 4 1 10 7 10" />
                     <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
                 </svg>
-                Repetir
-            </button>
-            <button class="fc-btn-arrow" onclick="fcNextCard()" title="Siguiente">
-                <svg viewBox="0 0 24 24">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-        </div>
-    </div>
+                Toca la tarjeta para voltearla
+            </div>
 
-    <!-- Success Modal -->
-    <div id="fc-modal" class="fc-modal-bg">
-        <div class="fc-modal">
-            <span class="modal-emoji">🎉</span>
-            <h2>¡Lección completada!</h2>
-            <p>Has repasado todas las palabras de esta clase. ¡Buen trabajo!</p>
-            <div class="fc-modal-btns">
-                <button class="btn-primary" onclick="fcResetLesson()">Repetir lección</button>
-                <button class="btn-secondary" onclick="fcCloseModal()">Cerrar</button>
+            <!-- Nav controls -->
+            <div class="fc-nav" style="margin-top:1.25rem;">
+                <button class="fc-btn-arrow" onclick="fcPrevCard()" title="Anterior">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                </button>
+                <button class="fc-btn-known" onclick="fcMarkKnown()">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    La sé
+                </button>
+                <button class="fc-btn-repeat" onclick="fcRepeatLater()">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="1 4 1 10 7 10" />
+                        <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
+                    </svg>
+                    Repetir
+                </button>
+                <button class="fc-btn-arrow" onclick="fcNextCard()" title="Siguiente">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
             </div>
         </div>
-    </div>
 
-</div><!-- /#fc-root -->
+        <!-- Success Modal -->
+        <div id="fc-modal" class="fc-modal-bg">
+            <div class="fc-modal">
+                <span class="modal-emoji">🎉</span>
+                <h2>¡Lección completada!</h2>
+                <p>Has repasado todas las palabras de esta clase. ¡Buen trabajo!</p>
+                <div class="fc-modal-btns">
+                    <button class="btn-primary" onclick="fcResetLesson()">Repetir lección</button>
+                    <button class="btn-secondary" onclick="fcCloseModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
 
-<script>
-    (function () {
-        "use strict";
+    </div><!-- /#fc-root -->
 
-        /* ── Supabase ── */
-        const SB_URL = 'https://alifjhqjmedstkafnrmp.supabase.co';
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsaWZqaHFqbWVkc3RrYWZucm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTA4MTUsImV4cCI6MjA4Nzg2NjgxNX0.Gz0tMmEy1rcNdjaH7pYkoySMm3PBczmgCuaWobMdOtQ';
-        const db = window.supabase.createClient(SB_URL, SB_KEY);
+    <script>
+        (function () {
+            "use strict";
 
-        /* ── State ── */
-        let allWords = [], sessionWords = [], currentIdx = 0;
-        let activeModule = '', activeLesson = '';
+            // ── Supabase ─────────────────────────────────────────────
+            const SB_URL = 'https://alifjhqjmedstkafnrmp.supabase.co';
+            const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsaWZqaHFqbWVkc3RrYWZucm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTA4MTUsImV4cCI6MjA4Nzg2NjgxNX0.Gz0tMmEy1rcNdjaH7pYkoySMm3PBczmgCuaWobMdOtQ';
+            const db = window.supabase.createClient(SB_URL, SB_KEY);
 
-        /* ── DOM helpers ── */
-        const $ = id => document.getElementById(id);
-        const showEl = (id, visible) => {
-            const el = $(id);
-            if (!el) return;
-            if (id === 'fc-loading' || id === 'fc-empty') {
-                el.classList.toggle('visible', visible);
-            } else {
-                el.style.display = visible ? '' : 'none';
-            }
-        };
+            // ── State ─────────────────────────────────────────────────
+            let allWords = [], sessionWords = [], currentIdx = 0;
+            let activeModule = '', activeLesson = '';
 
-        /* ── Boot ── */
-        (async function init() {
-            showEl('fc-loading', true);
-            showEl('fc-cardArea', false);
-            showEl('fc-empty', false);
-            try {
-                const { data, error } = await db.from('flashcards').select('*');
-                if (error) throw error;
-                allWords = data || [];
-                if (allWords.length) {
-                    fcPopulateModules();
-                    fcStartSession();
+            // ── DOM helpers ───────────────────────────────────────────
+            const $ = id => document.getElementById(id);
+            const showEl = (id, visible) => {
+                const el = $(id);
+                if (!el) return;
+                if (id === 'fc-loading' || id === 'fc-empty') {
+                    el.classList.toggle('visible', visible);
                 } else {
+                    el.style.display = visible ? '' : 'none';
+                }
+            };
+
+            // ── Boot ──────────────────────────────────────────────────
+            (async function init() {
+                showEl('fc-loading', true);
+                showEl('fc-cardArea', false);
+                showEl('fc-empty', false);
+                try {
+                    const { data, error } = await db.from('flashcards').select('*');
+                    if (error) throw error;
+                    allWords = data || [];
+                    if (allWords.length) {
+                        fcPopulateModules();
+                        fcStartSession();
+                    } else {
+                        showEl('fc-empty', true);
+                    }
+                } catch (e) {
+                    console.error('Flashcards error:', e);
+                    showEl('fc-empty', true);
+                } finally {
+                    showEl('fc-loading', false);
+                }
+            })();
+
+            // ── Selectors ─────────────────────────────────────────────
+            function fcPopulateModules() {
+                const sel = $('fc-moduleSelector');
+                const modules = [...new Set(allWords.map(w => w.module))];
+                sel.innerHTML = '';
+                modules.forEach(m => {
+                    const o = document.createElement('option');
+                    o.value = o.textContent = m;
+                    sel.appendChild(o);
+                });
+                activeModule = modules[0];
+                fcPopulateLessons();
+            }
+
+            function fcPopulateLessons() {
+                const sel = $('fc-lessonSelector');
+                const lessons = [...new Set(allWords.filter(w => w.module === activeModule).map(w => w.lesson))];
+                sel.innerHTML = '';
+                lessons.forEach(l => {
+                    const o = document.createElement('option');
+                    o.value = o.textContent = l;
+                    sel.appendChild(o);
+                });
+                activeLesson = lessons[0];
+            }
+
+            window.fcHandleModuleChange = function () {
+                activeModule = $('fc-moduleSelector').value;
+                fcPopulateLessons();
+                fcStartSession();
+            };
+            window.fcHandleLessonChange = function () {
+                activeLesson = $('fc-lessonSelector').value;
+                fcStartSession();
+            };
+
+            // ── Session ───────────────────────────────────────────────
+            function fcStartSession() {
+                sessionWords = allWords.filter(w => w.module === activeModule && w.lesson === activeLesson);
+                currentIdx = 0;
+                if (sessionWords.length) {
+                    showEl('fc-empty', false);
+                    showEl('fc-cardArea', true);
+                    fcUpdateUI();
+                } else {
+                    showEl('fc-cardArea', false);
                     showEl('fc-empty', true);
                 }
-            } catch (e) {
-                console.error('Flashcards error:', e);
-                showEl('fc-empty', true);
-            } finally {
-                showEl('fc-loading', false);
             }
+
+            function fcUpdateUI() {
+                const w = sessionWords[currentIdx];
+                $('fc-wordDutch').textContent = w.word_dutch || '---';
+                $('fc-wordSpanish').textContent = w.word_spanish || '---';
+                $('fc-phonetic').textContent = w.phonetic || '';
+                $('fc-current').textContent = currentIdx + 1;
+                $('fc-total').textContent = sessionWords.length;
+                $('fc-card').classList.remove('flipped');
+            }
+
+            // ── Card actions ──────────────────────────────────────────
+            window.fcFlipCard = function () { $('fc-card').classList.toggle('flipped'); };
+            window.fcNextCard = function () { if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); } };
+            window.fcPrevCard = function () { if (currentIdx > 0) { currentIdx--; fcUpdateUI(); } };
+            window.fcMarkKnown = function () {
+                if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); }
+                else { $('fc-modal').classList.add('visible'); }
+            };
+            window.fcRepeatLater = function () {
+                sessionWords.push(sessionWords[currentIdx]);
+                window.fcNextCard();
+            };
+
+            // ── Audio ─────────────────────────────────────────────────
+            window.fcPlayAudio = function (e) {
+                e.stopPropagation();
+                const w = sessionWords[currentIdx];
+                if (w.audio_url && w.audio_url.trim()) {
+                    new Audio(w.audio_url).play().catch(() => fcTTS(w.word_dutch));
+                } else {
+                    fcTTS(w.word_dutch);
+                }
+            };
+            function fcTTS(text) {
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'nl-NL';
+                window.speechSynthesis.speak(u);
+            }
+
+            // ── Modal ─────────────────────────────────────────────────
+            window.fcCloseModal = function () { $('fc-modal').classList.remove('visible'); };
+            window.fcResetLesson = function () { window.fcCloseModal(); fcStartSession(); };
+
         })();
+    </script>
 
-        /* ── Selectors ── */
-        function fcPopulateModules() {
-            const sel = $('fc-moduleSelector');
-            const modules = [...new Set(allWords.map(w => w.module))];
-            sel.innerHTML = '';
-            modules.forEach(m => {
-                const o = document.createElement('option');
-                o.value = o.textContent = m;
-                sel.appendChild(o);
-            });
-            activeModule = modules[0];
-            fcPopulateLessons();
-        }
+</body>
 
-        function fcPopulateLessons() {
-            const sel = $('fc-lessonSelector');
-            const lessons = [...new Set(allWords.filter(w => w.module === activeModule).map(w => w.lesson))];
-            sel.innerHTML = '';
-            lessons.forEach(l => {
-                const o = document.createElement('option');
-                o.value = o.textContent = l;
-                sel.appendChild(o);
-            });
-            activeLesson = lessons[0];
-        }
-
-        window.fcHandleModuleChange = function () {
-            activeModule = $('fc-moduleSelector').value;
-            fcPopulateLessons();
-            fcStartSession();
-        };
-        window.fcHandleLessonChange = function () {
-            activeLesson = $('fc-lessonSelector').value;
-            fcStartSession();
-        };
-
-        /* ── Session ── */
-        function fcStartSession() {
-            sessionWords = allWords.filter(w => w.module === activeModule && w.lesson === activeLesson);
-            currentIdx = 0;
-            if (sessionWords.length) {
-                showEl('fc-empty', false);
-                showEl('fc-cardArea', true);
-                fcUpdateUI();
-            } else {
-                showEl('fc-cardArea', false);
-                showEl('fc-empty', true);
-            }
-        }
-
-        function fcUpdateUI() {
-            const w = sessionWords[currentIdx];
-            $('fc-wordDutch').textContent = w.word_dutch || '---';
-            $('fc-wordSpanish').textContent = w.word_spanish || '---';
-            $('fc-phonetic').textContent = w.phonetic || '';
-            $('fc-counter').innerHTML = `<span>${currentIdx + 1}</span> de <span id="fc-total">${sessionWords.length}</span>`;
-            $('fc-card').classList.remove('flipped');
-        }
-
-        /* ── Card actions ── */
-        window.fcFlipCard = function () { $('fc-card').classList.toggle('flipped'); };
-        window.fcNextCard = function () {
-            if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); }
-        };
-        window.fcPrevCard = function () {
-            if (currentIdx > 0) { currentIdx--; fcUpdateUI(); }
-        };
-        window.fcMarkKnown = function () {
-            if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); }
-            else { $('fc-modal').classList.add('visible'); }
-        };
-        window.fcRepeatLater = function () {
-            sessionWords.push(sessionWords[currentIdx]);
-            fcNextCard();
-        };
-
-        /* ── Audio ── */
-        window.fcPlayAudio = function (e) {
-            e.stopPropagation();
-            const w = sessionWords[currentIdx];
-            if (w.audio_url && w.audio_url.trim()) {
-                const a = new Audio(w.audio_url);
-                a.play().catch(() => fcTTS(w.word_dutch));
-            } else {
-                fcTTS(w.word_dutch);
-            }
-        };
-        function fcTTS(text) {
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'nl-NL';
-            window.speechSynthesis.speak(u);
-        }
-
-        /* ── Modal ── */
-        window.fcCloseModal = function () { $('fc-modal').classList.remove('visible'); };
-        window.fcResetLesson = function () { fcCloseModal(); fcStartSession(); };
-
-    })();
-</script>
+</html>
