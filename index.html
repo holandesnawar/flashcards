@@ -3,16 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Flashcards - Holandés Nawar</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ── Reset & Base ───────────────────────────────────── */
         *,
         *::before,
         *::after {
@@ -28,426 +26,192 @@
             background-color: #f8fafc;
             color: #0f172a;
             -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
         }
 
-        /* ── Variables ──────────────────────────────────────── */
-        :root {
-            --blue: #2563eb;
-            --blue-dark: #1d4ed8;
-            --blue-light: #eff6ff;
-            --blue-mid: #dbeafe;
-            --text: #0f172a;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --white: #ffffff;
-            --bg: #f8fafc;
-            --green: #22c55e;
-            --card-shadow: 0 20px 60px -10px rgba(37, 99, 235, 0.18), 0 4px 16px rgba(0, 0, 0, 0.06);
-            --radius: 1.25rem;
-        }
-
-        /* ── Layout ─────────────────────────────────────────── */
-        #fc-root {
-            max-width: 560px;
+        /* ── Page wrapper ─────────────────────────────────── */
+        .page {
+            max-width: 680px;
             margin: 0 auto;
-            padding: 2.5rem 1.25rem 4rem;
+            padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 1.5rem) 4rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
-        /* ── Header ─────────────────────────────────────────── */
-        .fc-header {
-            text-align: center;
+        /* ── Page header ──────────────────────────────────── */
+        .page-header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
         }
 
-        .fc-icon-wrap {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--blue), #60a5fa);
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.28);
-            margin-bottom: .875rem;
+        .page-header h1 {
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: #0f172a;
         }
 
-        .fc-icon-wrap svg {
-            width: 28px;
-            height: 28px;
-            stroke: #fff;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+        .page-header p {
+            font-size: .875rem;
+            color: #64748b;
+            margin-top: .2rem;
         }
 
-        .fc-header h1 {
-            font-size: 1.75rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-        }
-
-        .fc-header p {
-            font-size: .9rem;
-            color: var(--muted);
-            margin-top: .3rem;
-        }
-
-        /* ── Tip Banner ──────────────────────────────────────── */
-        .fc-tip {
-            background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
-            border: 1px solid #bfdbfe;
-            border-radius: var(--radius);
-            padding: 1rem 1.25rem;
+        /* ── Info banner ──────────────────────────────────── */
+        .info-banner {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: .875rem 1rem;
             display: flex;
-            gap: .875rem;
+            gap: .75rem;
             align-items: flex-start;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
         }
 
-        .tip-icon {
+        .info-banner-icon {
             flex-shrink: 0;
-            width: 36px;
-            height: 36px;
-            background: var(--blue);
+            width: 32px;
+            height: 32px;
+            background: #eff6ff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .tip-icon svg {
-            width: 18px;
-            height: 18px;
-            stroke: #fff;
+        .info-banner-icon svg {
+            width: 15px;
+            height: 15px;
+            stroke: #2563eb;
             fill: none;
             stroke-width: 2.2;
             stroke-linecap: round;
             stroke-linejoin: round;
         }
 
-        .tip-body strong {
+        .info-banner-body strong {
             display: block;
-            font-size: .8rem;
+            font-size: .75rem;
             font-weight: 700;
-            color: var(--blue-dark);
+            color: #1e3a8a;
             text-transform: uppercase;
             letter-spacing: .05em;
-            margin-bottom: .3rem;
+            margin-bottom: .25rem;
         }
 
-        .tip-body p {
+        .info-banner-body p {
             font-size: .8125rem;
-            color: #334155;
+            color: #475569;
             line-height: 1.55;
         }
 
-        /* ── Selectors ──────────────────────────────────────── */
-        .fc-selectors {
+        .info-tip {
+            margin-top: .5rem;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: .5rem;
+            padding: .45rem .7rem;
+            font-size: .75rem;
+            color: #1d4ed8;
+            font-weight: 500;
+            display: flex;
+            align-items: flex-start;
+            gap: .35rem;
+            line-height: 1.4;
+        }
+
+        .info-tip svg {
+            flex-shrink: 0;
+            width: 12px;
+            height: 12px;
+            margin-top: 1px;
+            stroke: #2563eb;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ── Selectors ────────────────────────────────────── */
+        .selectors {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: .75rem;
+            gap: .625rem;
         }
 
-        .fc-sel-wrap {
-            background: var(--white);
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius);
-            padding: .625rem .875rem;
+        .sel-group {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: .875rem;
+            padding: .6rem .875rem;
             display: flex;
             flex-direction: column;
-            gap: .2rem;
+            gap: .1rem;
             transition: border-color .2s, box-shadow .2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
         }
 
-        .fc-sel-wrap:focus-within {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+        .sel-group:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
         }
 
-        .fc-sel-wrap label {
-            font-size: .6875rem;
+        .sel-group label {
+            font-size: .6rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--blue);
+            letter-spacing: .07em;
+            color: #2563eb;
+            white-space: nowrap;
         }
 
-        .fc-sel-wrap select {
+        .sel-group select {
             border: none;
             outline: none;
             background: transparent;
             font-size: .875rem;
             font-weight: 600;
-            color: var(--text);
+            color: #0f172a;
             width: 100%;
             cursor: pointer;
             font-family: inherit;
+            padding: 0;
+            min-height: 24px;
+            /* Fix iOS styling */
+            -webkit-appearance: none;
+            appearance: none;
         }
 
-        /* ── Card 3D ─────────────────────────────────────────── */
-        .fc-card-wrap {
-            perspective: 1200px;
-        }
-
-        .fc-card-inner {
-            position: relative;
-            width: 100%;
-            height: 320px;
-            transition: transform .65s cubic-bezier(.4, 0, .2, 1);
-            transform-style: preserve-3d;
-            cursor: pointer;
-        }
-
-        .fc-card-inner.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .fc-face {
-            position: absolute;
-            inset: 0;
-            border-radius: 1.75rem;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: var(--card-shadow);
-        }
-
-        .fc-face-front {
-            background: var(--white);
-            border: 1.5px solid var(--border);
-        }
-
-        .fc-face-back {
-            background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
-            color: #fff;
-            transform: rotateY(180deg);
-        }
-
-        .fc-lang-label {
-            font-size: .6875rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-            margin-bottom: 1rem;
-        }
-
-        .fc-face-front .fc-lang-label {
-            color: var(--blue);
-        }
-
-        .fc-face-back .fc-lang-label {
-            color: rgba(255, 255, 255, .65);
-        }
-
-        .fc-word {
-            font-size: 2.5rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-        }
-
-        .fc-face-front .fc-word {
-            color: var(--text);
-        }
-
-        .fc-face-back .fc-word {
-            color: #fff;
-        }
-
-        .fc-phonetic {
-            font-size: .9rem;
-            font-style: italic;
-            color: #94a3b8;
-            margin-top: .6rem;
-        }
-
-        /* Audio button */
-        .fc-audio-btn {
-            position: absolute;
-            bottom: 1.25rem;
-            right: 1.25rem;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--blue-light);
-            color: var(--blue);
-            transition: background .2s, transform .15s;
-        }
-
-        .fc-audio-btn:hover {
-            background: var(--blue-mid);
-            transform: scale(1.1);
-        }
-
-        .fc-audio-btn:active {
-            transform: scale(.93);
-        }
-
-        .fc-audio-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--blue);
-        }
-
-        /* Flip hint */
-        .fc-flip-hint {
-            text-align: center;
-            font-size: .75rem;
-            color: #94a3b8;
-            letter-spacing: .04em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: .35rem;
-        }
-
-        .fc-flip-hint svg {
-            width: 13px;
-            height: 13px;
-            stroke: #94a3b8;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-        }
-
-        /* ── Controls ────────────────────────────────────────── */
-        .fc-nav {
-            display: grid;
-            grid-template-columns: 48px 1fr 1fr 48px;
-            gap: .625rem;
-            align-items: center;
-        }
-
-        .fc-btn-arrow {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 1.5px solid var(--border);
-            background: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background .2s, transform .15s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-        }
-
-        .fc-btn-arrow:hover {
-            background: var(--bg);
-            transform: scale(1.06);
-        }
-
-        .fc-btn-arrow:active {
-            transform: scale(.92);
-        }
-
-        .fc-btn-arrow svg {
-            width: 18px;
-            height: 18px;
-            stroke: #475569;
-            fill: none;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .fc-btn-known,
-        .fc-btn-repeat {
-            height: 52px;
-            border: none;
-            border-radius: var(--radius);
-            font-size: .9rem;
-            font-weight: 700;
-            font-family: inherit;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: .5rem;
-            transition: transform .15s, box-shadow .2s, filter .2s;
-        }
-
-        .fc-btn-known {
-            background: linear-gradient(135deg, var(--green), #16a34a);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, .3);
-        }
-
-        .fc-btn-known:hover {
-            filter: brightness(1.08);
-            box-shadow: 0 8px 24px rgba(34, 197, 94, .4);
-        }
-
-        .fc-btn-known:active {
-            transform: scale(.95);
-        }
-
-        .fc-btn-repeat {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1.5px solid var(--border);
-        }
-
-        .fc-btn-repeat:hover {
-            background: #e2e8f0;
-        }
-
-        .fc-btn-repeat:active {
-            transform: scale(.95);
-        }
-
-        .fc-btn-known svg,
-        .fc-btn-repeat svg {
-            width: 17px;
-            height: 17px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2.2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ── Empty & Loading ─────────────────────────────────── */
-        .fc-empty,
-        .fc-loading {
+        /* ── States (loading / empty) ─────────────────────── */
+        .state-box {
             display: none;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: .75rem;
+            gap: .625rem;
             padding: 3rem 1rem;
         }
 
-        .fc-empty.visible,
-        .fc-loading.visible {
+        .state-box.visible {
             display: flex;
         }
 
-        .fc-empty-icon {
-            width: 64px;
-            height: 64px;
+        .state-icon {
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             background: #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: .25rem;
         }
 
-        .fc-empty-icon svg {
-            width: 28px;
-            height: 28px;
+        .state-icon svg {
+            width: 22px;
+            height: 22px;
             stroke: #94a3b8;
             fill: none;
             stroke-width: 1.8;
@@ -455,176 +219,448 @@
             stroke-linejoin: round;
         }
 
-        .fc-empty h3 {
-            font-size: 1.1rem;
-            font-weight: 800;
+        .state-box h3 {
+            font-size: 1rem;
+            font-weight: 700;
         }
 
-        .fc-empty p {
+        .state-box p {
             font-size: .875rem;
-            color: var(--muted);
+            color: #64748b;
         }
 
-        @keyframes fc-spin {
+        @keyframes spin {
             to {
                 transform: rotate(360deg);
             }
         }
 
-        .fc-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--blue-mid);
-            border-top-color: var(--blue);
+        .spinner {
+            width: 34px;
+            height: 34px;
+            border: 2.5px solid #dbeafe;
+            border-top-color: #2563eb;
             border-radius: 50%;
-            animation: fc-spin .7s linear infinite;
+            animation: spin .7s linear infinite;
         }
 
-        .fc-loading p {
-            font-size: .8125rem;
+        #fc-loading p {
+            font-size: .75rem;
             font-weight: 600;
-            color: var(--muted);
+            color: #94a3b8;
             letter-spacing: .05em;
             text-transform: uppercase;
         }
 
-        /* ── Counter ─────────────────────────────────────────── */
+        /* ── Card area ────────────────────────────────────── */
+        #fc-cardArea {
+            display: none;
+            flex-direction: column;
+            gap: .875rem;
+        }
+
+        #fc-cardArea.visible {
+            display: flex;
+        }
+
+        /* counter */
         .fc-counter {
-            text-align: center;
             font-size: .8rem;
             font-weight: 600;
-            color: var(--muted);
-            letter-spacing: .04em;
+            color: #94a3b8;
+            text-align: center;
         }
 
-        .fc-counter span {
-            color: var(--blue);
+        .fc-counter strong {
+            color: #2563eb;
+        }
+
+        /* ── 3D Flashcard ─────────────────────────────────── */
+        .card-wrap {
+            perspective: 1200px;
+            /* Adaptive height: good on mobile + desktop */
+            height: clamp(220px, 42vw, 300px);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .55s cubic-bezier(.4, 0, .2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 1.125rem;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(1.25rem, 5vw, 2rem);
+            text-align: center;
+            user-select: none;
+        }
+
+        .card-front {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
+        }
+
+        .card-back {
+            background: #fff;
+            border: 1px solid #2563eb;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, .1);
+            transform: rotateY(180deg);
+        }
+
+        .card-lang {
+            font-size: .6325rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: .75rem;
+        }
+
+        .card-front .card-lang {
+            color: #2563eb;
+        }
+
+        .card-back .card-lang {
+            color: #64748b;
+        }
+
+        .card-word {
+            font-size: clamp(1.75rem, 6vw, 2.25rem);
             font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: #0f172a;
+            word-break: break-word;
         }
 
-        /* ── Modal ───────────────────────────────────────────── */
-        .fc-modal-bg {
+        .card-phonetic {
+            font-size: .875rem;
+            font-style: italic;
+            color: #94a3b8;
+            margin-top: .4rem;
+        }
+
+        /* audio btn */
+        .audio-btn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s, border-color .2s, transform .15s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .audio-btn:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .audio-btn:active {
+            transform: scale(.9);
+        }
+
+        .audio-btn svg {
+            width: 17px;
+            height: 17px;
+            stroke: #2563eb;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* flip hint */
+        .flip-hint {
+            font-size: .75rem;
+            color: #cbd5e1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .3rem;
+        }
+
+        .flip-hint svg {
+            width: 11px;
+            height: 11px;
+            stroke: #cbd5e1;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        /* ── Controls panel ───────────────────────────────── */
+        .controls {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.125rem;
+            padding: .875rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: .625rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+        }
+
+        .btn-arrow {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-arrow:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .btn-arrow:active {
+            transform: scale(.9);
+        }
+
+        .btn-arrow svg {
+            width: 16px;
+            height: 16px;
+            stroke: #475569;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .action-pair {
+            display: flex;
+            gap: .5rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: 0;
+            height: 46px;
+            border: none;
+            border-radius: .875rem;
+            font-size: .875rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+            transition: filter .2s, transform .15s;
+            white-space: nowrap;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-known {
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(37, 99, 235, .22);
+        }
+
+        .btn-known:hover {
+            filter: brightness(1.08);
+        }
+
+        .btn-known:active {
+            transform: scale(.96);
+        }
+
+        .btn-repeat {
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-repeat:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-repeat:active {
+            transform: scale(.96);
+        }
+
+        .btn-action svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ── Modal ────────────────────────────────────────── */
+        .modal-bg {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, .55);
-            backdrop-filter: blur(6px);
+            background: rgba(15, 23, 42, .4);
+            backdrop-filter: blur(4px);
             z-index: 9999;
             align-items: center;
             justify-content: center;
             padding: 1rem;
         }
 
-        .fc-modal-bg.visible {
+        .modal-bg.visible {
             display: flex;
         }
 
-        .fc-modal {
-            background: var(--white);
-            border-radius: 2rem;
-            padding: 2.5rem 2rem;
-            max-width: 400px;
+        .modal-box {
+            background: #fff;
+            border-radius: 1.5rem;
+            padding: 2rem 1.5rem;
+            max-width: 360px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, .18);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .14);
+            border: 1px solid #e2e8f0;
         }
 
         .modal-emoji {
-            font-size: 3rem;
+            font-size: 2.25rem;
             display: block;
-            margin-bottom: 1rem;
+            margin-bottom: .875rem;
         }
 
-        .fc-modal h2 {
-            font-size: 1.5rem;
-            font-weight: 900;
-            margin-bottom: .5rem;
+        .modal-box h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: .4rem;
         }
 
-        .fc-modal p {
-            color: var(--muted);
-            margin-bottom: 1.75rem;
-            font-size: .9rem;
+        .modal-box>p {
+            color: #64748b;
+            font-size: .875rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
         }
 
-        .fc-modal-btns {
+        .modal-actions {
             display: flex;
             flex-direction: column;
-            gap: .625rem;
+            gap: .5rem;
         }
 
-        .fc-modal-btns button {
-            height: 52px;
-            border: none;
-            border-radius: var(--radius);
-            font-size: .9375rem;
-            font-weight: 700;
-            font-family: inherit;
-            cursor: pointer;
-            transition: filter .2s, transform .15s;
+        .modal-actions .btn-action {
+            border-radius: .875rem;
+            height: 48px;
         }
 
-        .btn-primary {
-            background: var(--blue);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, .3);
+        /* ── Responsive tweaks ────────────────────────────── */
+        @media (max-width: 400px) {
+            .btn-action {
+                font-size: .8rem;
+            }
+
+            .btn-action svg {
+                display: none;
+            }
+
+            .selectors {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .btn-primary:hover {
-            filter: brightness(1.1);
-        }
+        @media (hover: none) {
 
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
-        }
+            /* On touch devices remove hover states that feel sticky */
+            .btn-arrow:hover,
+            .audio-btn:hover,
+            .btn-known:hover,
+            .btn-repeat:hover {
+                filter: none;
+                background: initial;
+            }
 
-        .btn-secondary:hover {
-            background: #e2e8f0;
+            .btn-known:hover {
+                background: #2563eb;
+            }
+
+            .btn-repeat:hover {
+                background: #f8fafc;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div id="fc-root">
+    <div class="page">
 
         <!-- Header -->
-        <div class="fc-header">
-            <div class="fc-icon-wrap">
-                <svg viewBox="0 0 24 24">
-                    <rect x="2" y="5" width="14" height="14" rx="2" />
-                    <path d="M8 3h14v14" />
-                </svg>
-            </div>
+        <div class="page-header">
             <h1>Flashcards</h1>
             <p>Practica el vocabulario de tu lección</p>
         </div>
 
-        <!-- Tip banner -->
-        <div class="fc-tip">
-            <div class="tip-icon">
+        <!-- Info banner -->
+        <div class="info-banner">
+            <div class="info-banner-icon">
                 <svg viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                    <polyline points="13 2 13 9 20 9" />
                 </svg>
             </div>
-            <div class="tip-body">
-                <strong>¿Cómo funciona?</strong>
-                <p>Elige tu módulo y clase. Verás la palabra en holandés — <strong>haz clic en la tarjeta</strong> para
-                    ver la traducción. Después marca si la sabías ✓ o si quieres repetirla ↺.</p>
+            <div class="info-banner-body">
+                <strong>Sobre las Flashcards</strong>
+                <p>Elige tu módulo y clase. Verás la palabra en holandés; toca la tarjeta para ver la traducción al
+                    español.</p>
+                <p class="info-tip">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 18l6-6-6-6" />
+                    </svg>
+                    Usa <strong>La sé</strong> si la conoces, o <strong>Repetir</strong> para volver a verla al final.
+                </p>
             </div>
         </div>
 
         <!-- Selectors -->
-        <div class="fc-selectors">
-            <div class="fc-sel-wrap">
+        <div class="selectors">
+            <div class="sel-group">
                 <label>Módulo</label>
                 <select id="fc-moduleSelector" onchange="fcHandleModuleChange()">
                     <option value="" disabled selected>Cargando...</option>
                 </select>
             </div>
-            <div class="fc-sel-wrap">
+            <div class="sel-group">
                 <label>Clase</label>
                 <select id="fc-lessonSelector" onchange="fcHandleLessonChange()">
                     <option value="" disabled selected>Selecciona</option>
@@ -633,37 +669,38 @@
         </div>
 
         <!-- Loading -->
-        <div id="fc-loading" class="fc-loading">
-            <div class="fc-spinner"></div>
+        <div id="fc-loading" class="state-box">
+            <div class="spinner"></div>
             <p>Cargando datos...</p>
         </div>
 
-        <!-- Empty state -->
-        <div id="fc-empty" class="fc-empty">
-            <div class="fc-empty-icon">
+        <!-- Empty -->
+        <div id="fc-empty" class="state-box">
+            <div class="state-icon">
                 <svg viewBox="0 0 24 24">
                     <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
                     <polyline points="13 2 13 9 20 9" />
                 </svg>
             </div>
             <h3>Sin palabras aún</h3>
-            <p>Esta lección no tiene contenido todavía. ¡Pronto llegará!</p>
+            <p>Esta lección no tiene contenido todavía.</p>
         </div>
 
         <!-- Card area -->
-        <div id="fc-cardArea" style="display:none;">
-            <!-- Counter -->
-            <div class="fc-counter" id="fc-counter"><span id="fc-current">1</span> de <span id="fc-total">0</span></div>
+        <div id="fc-cardArea">
+
+            <div class="fc-counter">
+                Tarjeta <strong id="fc-current">1</strong> de <strong id="fc-total">0</strong>
+            </div>
 
             <!-- 3D Card -->
-            <div class="fc-card-wrap" style="margin-top:.75rem;">
-                <div id="fc-card" class="fc-card-inner" onclick="fcFlipCard()">
-                    <!-- Front -->
-                    <div class="fc-face fc-face-front">
-                        <span class="fc-lang-label">Holandés</span>
-                        <div id="fc-wordDutch" class="fc-word">---</div>
-                        <div id="fc-phonetic" class="fc-phonetic"></div>
-                        <button class="fc-audio-btn" onclick="fcPlayAudio(event)" title="Escuchar pronunciación">
+            <div class="card-wrap">
+                <div id="fc-card" class="card-inner" onclick="fcFlipCard()">
+                    <div class="card-face card-front">
+                        <span class="card-lang">Holandés</span>
+                        <div id="fc-wordDutch" class="card-word">---</div>
+                        <div id="fc-phonetic" class="card-phonetic"></div>
+                        <button class="audio-btn" onclick="fcPlayAudio(event)" title="Escuchar pronunciación">
                             <svg viewBox="0 0 24 24">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
@@ -671,16 +708,15 @@
                             </svg>
                         </button>
                     </div>
-                    <!-- Back -->
-                    <div class="fc-face fc-face-back">
-                        <span class="fc-lang-label">Español</span>
-                        <div id="fc-wordSpanish" class="fc-word">---</div>
+                    <div class="card-face card-back">
+                        <span class="card-lang">Español</span>
+                        <div id="fc-wordSpanish" class="card-word">---</div>
                     </div>
                 </div>
             </div>
 
             <!-- Flip hint -->
-            <div class="fc-flip-hint" style="margin-top:.75rem;">
+            <div class="flip-hint">
                 <svg viewBox="0 0 24 24">
                     <polyline points="1 4 1 10 7 10" />
                     <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
@@ -688,75 +724,78 @@
                 Toca la tarjeta para voltearla
             </div>
 
-            <!-- Nav controls -->
-            <div class="fc-nav" style="margin-top:1.25rem;">
-                <button class="fc-btn-arrow" onclick="fcPrevCard()" title="Anterior">
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn-arrow" onclick="fcPrevCard()" aria-label="Anterior">
                     <svg viewBox="0 0 24 24">
                         <polyline points="15 18 9 12 15 6" />
                     </svg>
                 </button>
-                <button class="fc-btn-known" onclick="fcMarkKnown()">
-                    <svg viewBox="0 0 24 24">
-                        <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    La sé
-                </button>
-                <button class="fc-btn-repeat" onclick="fcRepeatLater()">
-                    <svg viewBox="0 0 24 24">
-                        <polyline points="1 4 1 10 7 10" />
-                        <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
-                    </svg>
-                    Repetir
-                </button>
-                <button class="fc-btn-arrow" onclick="fcNextCard()" title="Siguiente">
+                <div class="action-pair">
+                    <button class="btn-action btn-known" onclick="fcMarkKnown()">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        La sé
+                    </button>
+                    <button class="btn-action btn-repeat" onclick="fcRepeatLater()">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="1 4 1 10 7 10" />
+                            <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
+                        </svg>
+                        Repetir
+                    </button>
+                </div>
+                <button class="btn-arrow" onclick="fcNextCard()" aria-label="Siguiente">
                     <svg viewBox="0 0 24 24">
                         <polyline points="9 18 15 12 9 6" />
                     </svg>
                 </button>
             </div>
+
         </div>
 
-        <!-- Success Modal -->
-        <div id="fc-modal" class="fc-modal-bg">
-            <div class="fc-modal">
-                <span class="modal-emoji">🎉</span>
+        <!-- Modal -->
+        <div id="fc-modal" class="modal-bg">
+            <div class="modal-box">
+                <span class="modal-emoji">✓</span>
                 <h2>¡Lección completada!</h2>
                 <p>Has repasado todas las palabras de esta clase. ¡Buen trabajo!</p>
-                <div class="fc-modal-btns">
-                    <button class="btn-primary" onclick="fcResetLesson()">Repetir lección</button>
-                    <button class="btn-secondary" onclick="fcCloseModal()">Cerrar</button>
+                <div class="modal-actions">
+                    <button class="btn-action btn-known" onclick="fcResetLesson()">Repetir lección</button>
+                    <button class="btn-action btn-repeat" onclick="fcCloseModal()">Cerrar</button>
                 </div>
             </div>
         </div>
 
-    </div><!-- /#fc-root -->
+    </div><!-- /.page -->
 
     <script>
         (function () {
             "use strict";
 
-            // ── Supabase ─────────────────────────────────────────────
             const SB_URL = 'https://alifjhqjmedstkafnrmp.supabase.co';
             const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsaWZqaHFqbWVkc3RrYWZucm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTA4MTUsImV4cCI6MjA4Nzg2NjgxNX0.Gz0tMmEy1rcNdjaH7pYkoySMm3PBczmgCuaWobMdOtQ';
             const db = window.supabase.createClient(SB_URL, SB_KEY);
 
-            // ── State ─────────────────────────────────────────────────
             let allWords = [], sessionWords = [], currentIdx = 0;
             let activeModule = '', activeLesson = '';
 
-            // ── DOM helpers ───────────────────────────────────────────
             const $ = id => document.getElementById(id);
-            const showEl = (id, visible) => {
+
+            function showEl(id, visible) {
                 const el = $(id);
                 if (!el) return;
                 if (id === 'fc-loading' || id === 'fc-empty') {
                     el.classList.toggle('visible', visible);
+                } else if (id === 'fc-cardArea') {
+                    el.style.display = visible ? 'flex' : 'none';
                 } else {
                     el.style.display = visible ? '' : 'none';
                 }
-            };
+            }
 
-            // ── Boot ──────────────────────────────────────────────────
+            /* ── Boot ── */
             (async function init() {
                 showEl('fc-loading', true);
                 showEl('fc-cardArea', false);
@@ -779,7 +818,7 @@
                 }
             })();
 
-            // ── Selectors ─────────────────────────────────────────────
+            /* ── Selectors ── */
             function fcPopulateModules() {
                 const sel = $('fc-moduleSelector');
                 const modules = [...new Set(allWords.map(w => w.module))];
@@ -815,7 +854,7 @@
                 fcStartSession();
             };
 
-            // ── Session ───────────────────────────────────────────────
+            /* ── Session ── */
             function fcStartSession() {
                 sessionWords = allWords.filter(w => w.module === activeModule && w.lesson === activeLesson);
                 currentIdx = 0;
@@ -839,38 +878,30 @@
                 $('fc-card').classList.remove('flipped');
             }
 
-            // ── Card actions ──────────────────────────────────────────
-            window.fcFlipCard = function () { $('fc-card').classList.toggle('flipped'); };
-            window.fcNextCard = function () { if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); } };
-            window.fcPrevCard = function () { if (currentIdx > 0) { currentIdx--; fcUpdateUI(); } };
-            window.fcMarkKnown = function () {
-                if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); }
-                else { $('fc-modal').classList.add('visible'); }
-            };
-            window.fcRepeatLater = function () {
-                sessionWords.push(sessionWords[currentIdx]);
-                window.fcNextCard();
-            };
+            /* ── Actions ── */
+            window.fcFlipCard = () => $('fc-card').classList.toggle('flipped');
+            window.fcNextCard = () => { if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); } };
+            window.fcPrevCard = () => { if (currentIdx > 0) { currentIdx--; fcUpdateUI(); } };
+            window.fcMarkKnown = () => { if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); } else { $('fc-modal').classList.add('visible'); } };
+            window.fcRepeatLater = () => { sessionWords.push(sessionWords[currentIdx]); window.fcNextCard(); };
 
-            // ── Audio ─────────────────────────────────────────────────
+            /* ── Audio ── */
             window.fcPlayAudio = function (e) {
                 e.stopPropagation();
                 const w = sessionWords[currentIdx];
                 if (w.audio_url && w.audio_url.trim()) {
                     new Audio(w.audio_url).play().catch(() => fcTTS(w.word_dutch));
-                } else {
-                    fcTTS(w.word_dutch);
-                }
+                } else { fcTTS(w.word_dutch); }
             };
-            function fcTTS(text) {
+            const fcTTS = text => {
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'nl-NL';
-                window.speechSynthesis.speak(u);
-            }
+                speechSynthesis.speak(u);
+            };
 
-            // ── Modal ─────────────────────────────────────────────────
-            window.fcCloseModal = function () { $('fc-modal').classList.remove('visible'); };
-            window.fcResetLesson = function () { window.fcCloseModal(); fcStartSession(); };
+            /* ── Modal ── */
+            window.fcCloseModal = () => $('fc-modal').classList.remove('visible');
+            window.fcResetLesson = () => { window.fcCloseModal(); fcStartSession(); };
 
         })();
     </script>
