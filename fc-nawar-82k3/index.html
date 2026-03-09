@@ -1,1 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Flashcards - Holandés Nawar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* ── Page wrapper ─────────────────────────────────── */
+        .page {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 1.5rem) 4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* ── Page header ──────────────────────────────────── */
+        .page-header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: #0f172a;
+        }
+
+        .page-header p {
+            font-size: .875rem;
+            color: #64748b;
+            margin-top: .2rem;
+        }
+
+        /* ── Info banner ──────────────────────────────────── */
+        .info-banner {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: .875rem 1rem;
+            display: flex;
+            gap: .75rem;
+            align-items: flex-start;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+        }
+
+        .info-banner-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: #eff6ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-banner-icon svg {
+            width: 15px;
+            height: 15px;
+            stroke: #2563eb;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .info-banner-body strong {
+            display: block;
+            font-size: .75rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: .25rem;
+        }
+
+        .info-banner-body p {
+            font-size: .8125rem;
+            color: #475569;
+            line-height: 1.55;
+        }
+
+        .info-tip {
+            margin-top: .5rem;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: .5rem;
+            padding: .45rem .7rem;
+            font-size: .75rem;
+            color: #1d4ed8;
+            font-weight: 500;
+            display: flex;
+            align-items: flex-start;
+            gap: .35rem;
+            line-height: 1.4;
+        }
+
+        .info-tip svg {
+            flex-shrink: 0;
+            width: 12px;
+            height: 12px;
+            margin-top: 1px;
+            stroke: #2563eb;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ── Selectors ────────────────────────────────────── */
+        .selectors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .625rem;
+        }
+
+        .sel-group {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: .875rem;
+            padding: .6rem .875rem;
+            display: flex;
+            flex-direction: column;
+            gap: .1rem;
+            transition: border-color .2s, box-shadow .2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+        }
+
+        .sel-group:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
+        }
+
+        .sel-group label {
+            font-size: .6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: #2563eb;
+            white-space: nowrap;
+        }
+
+        .sel-group select {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: .875rem;
+            font-weight: 600;
+            color: #0f172a;
+            width: 100%;
+            cursor: pointer;
+            font-family: inherit;
+            padding: 0;
+            min-height: 24px;
+            /* Fix iOS styling */
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* ── States (loading / empty) ─────────────────────── */
+        .state-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: .625rem;
+            padding: 3rem 1rem;
+        }
+
+        .state-box.visible {
+            display: flex;
+        }
+
+        .state-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: .25rem;
+        }
+
+        .state-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: #94a3b8;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .state-box h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .state-box p {
+            font-size: .875rem;
+            color: #64748b;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            width: 34px;
+            height: 34px;
+            border: 2.5px solid #dbeafe;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        #fc-loading p {
+            font-size: .75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        /* ── Card area ────────────────────────────────────── */
+        #fc-cardArea {
+            display: none;
+            flex-direction: column;
+            gap: .875rem;
+        }
+
+        #fc-cardArea.visible {
+            display: flex;
+        }
+
+        /* counter */
+        .fc-counter {
+            font-size: .8rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .fc-counter strong {
+            color: #2563eb;
+        }
+
+        /* ── 3D Flashcard ─────────────────────────────────── */
+        .card-wrap {
+            perspective: 1200px;
+            /* Adaptive height: good on mobile + desktop */
+            height: clamp(220px, 42vw, 300px);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform .55s cubic-bezier(.4, 0, .2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 1.125rem;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(1.25rem, 5vw, 2rem);
+            text-align: center;
+            user-select: none;
+        }
+
+        .card-front {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
+        }
+
+        .card-back {
+            background: #fff;
+            border: 1px solid #2563eb;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, .1);
+            transform: rotateY(180deg);
+        }
+
+        .card-lang {
+            font-size: .6325rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: .75rem;
+        }
+
+        .card-front .card-lang {
+            color: #2563eb;
+        }
+
+        .card-back .card-lang {
+            color: #64748b;
+        }
+
+        .card-word {
+            font-size: clamp(1.75rem, 6vw, 2.25rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: #0f172a;
+            word-break: break-word;
+        }
+
+        .card-phonetic {
+            font-size: .875rem;
+            font-style: italic;
+            color: #94a3b8;
+            margin-top: .4rem;
+        }
+
+        /* audio btn */
+        .audio-btn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s, border-color .2s, transform .15s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .audio-btn:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .audio-btn:active {
+            transform: scale(.9);
+        }
+
+        .audio-btn svg {
+            width: 17px;
+            height: 17px;
+            stroke: #2563eb;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* flip hint */
+        .flip-hint {
+            font-size: .75rem;
+            color: #cbd5e1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .3rem;
+        }
+
+        .flip-hint svg {
+            width: 11px;
+            height: 11px;
+            stroke: #cbd5e1;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        /* ── Controls panel ───────────────────────────────── */
+        .controls {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.125rem;
+            padding: .875rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: .625rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+        }
+
+        .btn-arrow {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-arrow:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .btn-arrow:active {
+            transform: scale(.9);
+        }
+
+        .btn-arrow svg {
+            width: 16px;
+            height: 16px;
+            stroke: #475569;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .action-pair {
+            display: flex;
+            gap: .5rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: 0;
+            height: 46px;
+            border: none;
+            border-radius: .875rem;
+            font-size: .875rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+            transition: filter .2s, transform .15s;
+            white-space: nowrap;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-known {
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(37, 99, 235, .22);
+        }
+
+        .btn-known:hover {
+            filter: brightness(1.08);
+        }
+
+        .btn-known:active {
+            transform: scale(.96);
+        }
+
+        .btn-repeat {
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-repeat:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-repeat:active {
+            transform: scale(.96);
+        }
+
+        .btn-action svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ── Modal ────────────────────────────────────────── */
+        .modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .4);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-bg.visible {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 1.5rem;
+            padding: 2rem 1.5rem;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .14);
+            border: 1px solid #e2e8f0;
+        }
+
+        .modal-emoji {
+            font-size: 2.25rem;
+            display: block;
+            margin-bottom: .875rem;
+        }
+
+        .modal-box h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: .4rem;
+        }
+
+        .modal-box>p {
+            color: #64748b;
+            font-size: .875rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        .modal-actions .btn-action {
+            border-radius: .875rem;
+            height: 50px;
+            width: 100%;
+            flex: none;
+            font-size: .9375rem;
+        }
+
+        /* ── Responsive tweaks ────────────────────────────── */
+        @media (max-width: 400px) {
+            .btn-action {
+                font-size: .8rem;
+            }
+
+            .btn-action svg {
+                display: none;
+            }
+
+            .selectors {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (hover: none) {
+
+            /* On touch devices remove hover states that feel sticky */
+            .btn-arrow:hover,
+            .audio-btn:hover,
+            .btn-known:hover,
+            .btn-repeat:hover {
+                filter: none;
+                background: initial;
+            }
+
+            .btn-known:hover {
+                background: #2563eb;
+            }
+
+            .btn-repeat:hover {
+                background: #f8fafc;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+
+        <!-- Header -->
+        <div class="page-header">
+            <h1>Flashcards</h1>
+            <p>Practica el vocabulario de tu lección</p>
+        </div>
+
+        <!-- Info banner -->
+        <div class="info-banner">
+            <div class="info-banner-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                    <polyline points="13 2 13 9 20 9" />
+                </svg>
+            </div>
+            <div class="info-banner-body">
+                <strong>Sobre las Flashcards</strong>
+                <p>Elige tu módulo y clase. Verás la palabra en holandés; toca la tarjeta para ver la traducción al
+                    español.</p>
+                <p class="info-tip">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 18l6-6-6-6" />
+                    </svg>
+                    Usa <strong>La sé</strong> si la conoces, o <strong>Repetir</strong> para volver a verla al final.
+                </p>
+            </div>
+        </div>
+
+        <!-- Selectors -->
+        <div class="selectors">
+            <div class="sel-group">
+                <label>Módulo</label>
+                <select id="fc-moduleSelector" onchange="fcHandleModuleChange()">
+                    <option value="" disabled selected>Cargando...</option>
+                </select>
+            </div>
+            <div class="sel-group">
+                <label>Clase</label>
+                <select id="fc-lessonSelector" onchange="fcHandleLessonChange()">
+                    <option value="" disabled selected>Selecciona</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="fc-loading" class="state-box">
+            <div class="spinner"></div>
+            <p>Cargando datos...</p>
+        </div>
+
+        <!-- Empty -->
+        <div id="fc-empty" class="state-box">
+            <div class="state-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                    <polyline points="13 2 13 9 20 9" />
+                </svg>
+            </div>
+            <h3>Sin palabras aún</h3>
+            <p>Esta lección no tiene contenido todavía.</p>
+        </div>
+
+        <!-- Card area -->
+        <div id="fc-cardArea">
+
+            <div class="fc-counter">
+                Tarjeta <strong id="fc-current">1</strong> de <strong id="fc-total">0</strong>
+            </div>
+
+            <!-- 3D Card -->
+            <div class="card-wrap">
+                <div id="fc-card" class="card-inner" onclick="fcFlipCard()">
+                    <div class="card-face card-front">
+                        <span class="card-lang">Holandés</span>
+                        <div id="fc-wordDutch" class="card-word">---</div>
+                        <div id="fc-phonetic" class="card-phonetic"></div>
+                        <button class="audio-btn" onclick="fcPlayAudio(event)" title="Escuchar pronunciación">
+                            <svg viewBox="0 0 24 24">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-face card-back">
+                        <span class="card-lang">Español</span>
+                        <div id="fc-wordSpanish" class="card-word">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flip hint -->
+            <div class="flip-hint">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="1 4 1 10 7 10" />
+                    <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
+                </svg>
+                Toca la tarjeta para voltearla
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn-arrow" onclick="fcPrevCard()" aria-label="Anterior">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                </button>
+                <div class="action-pair">
+                    <button class="btn-action btn-known" onclick="fcMarkKnown()">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        La sé
+                    </button>
+                    <button class="btn-action btn-repeat" onclick="fcRepeatLater()">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="1 4 1 10 7 10" />
+                            <path d="M3.51 15A9 9 0 1 0 5.64 5.64L1 10" />
+                        </svg>
+                        Repetir
+                    </button>
+                </div>
+                <button class="btn-arrow" onclick="fcNextCard()" aria-label="Siguiente">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Modal -->
+        <div id="fc-modal" class="modal-bg">
+            <div class="modal-box">
+                <span class="modal-emoji">✓</span>
+                <h2>¡Lección completada!</h2>
+                <p>Has repasado todas las palabras de esta clase. ¡Buen trabajo!</p>
+                <div class="modal-actions">
+                    <button class="btn-action btn-known" onclick="fcResetLesson()">Repetir lección</button>
+                    <button class="btn-action btn-repeat" onclick="fcCloseModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.page -->
+
+    <script>
+        (function () {
+            "use strict";
+
+            const SB_URL = 'https://alifjhqjmedstkafnrmp.supabase.co';
+            const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsaWZqaHFqbWVkc3RrYWZucm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTA4MTUsImV4cCI6MjA4Nzg2NjgxNX0.Gz0tMmEy1rcNdjaH7pYkoySMm3PBczmgCuaWobMdOtQ';
+            const db = window.supabase.createClient(SB_URL, SB_KEY);
+
+            let allWords = [], sessionWords = [], currentIdx = 0;
+            let activeModule = '', activeLesson = '';
+
+            const $ = id => document.getElementById(id);
+
+            function showEl(id, visible) {
+                const el = $(id);
+                if (!el) return;
+                if (id === 'fc-loading' || id === 'fc-empty') {
+                    el.classList.toggle('visible', visible);
+                } else if (id === 'fc-cardArea') {
+                    el.style.display = visible ? 'flex' : 'none';
+                } else {
+                    el.style.display = visible ? '' : 'none';
+                }
+            }
+
+            /* ── Boot ── */
+            (async function init() {
+                showEl('fc-loading', true);
+                showEl('fc-cardArea', false);
+                showEl('fc-empty', false);
+                try {
+                    const { data, error } = await db.from('flashcards').select('*');
+                    if (error) throw error;
+                    allWords = data || [];
+                    if (allWords.length) {
+                        fcPopulateModules();
+                        fcStartSession();
+                    } else {
+                        showEl('fc-empty', true);
+                    }
+                } catch (e) {
+                    console.error('Flashcards error:', e);
+                    showEl('fc-empty', true);
+                } finally {
+                    showEl('fc-loading', false);
+                }
+            })();
+
+            /* ── Selectors ── */
+            function fcPopulateModules() {
+                const sel = $('fc-moduleSelector');
+                const modules = [...new Set(allWords.map(w => w.module))];
+                sel.innerHTML = '';
+                modules.forEach(m => {
+                    const o = document.createElement('option');
+                    o.value = o.textContent = m;
+                    sel.appendChild(o);
+                });
+                activeModule = modules[0];
+                fcPopulateLessons();
+            }
+
+            function fcPopulateLessons() {
+                const sel = $('fc-lessonSelector');
+                const lessons = [...new Set(allWords.filter(w => w.module === activeModule).map(w => w.lesson))];
+                sel.innerHTML = '';
+                lessons.forEach(l => {
+                    const o = document.createElement('option');
+                    o.value = o.textContent = l;
+                    sel.appendChild(o);
+                });
+                activeLesson = lessons[0];
+            }
+
+            window.fcHandleModuleChange = function () {
+                activeModule = $('fc-moduleSelector').value;
+                fcPopulateLessons();
+                fcStartSession();
+            };
+            window.fcHandleLessonChange = function () {
+                activeLesson = $('fc-lessonSelector').value;
+                fcStartSession();
+            };
+
+            /* ── Session ── */
+            function fcStartSession() {
+                sessionWords = allWords.filter(w => w.module === activeModule && w.lesson === activeLesson);
+                currentIdx = 0;
+                if (sessionWords.length) {
+                    showEl('fc-empty', false);
+                    showEl('fc-cardArea', true);
+                    fcUpdateUI();
+                } else {
+                    showEl('fc-cardArea', false);
+                    showEl('fc-empty', true);
+                }
+            }
+
+            function fcUpdateUI() {
+                const w = sessionWords[currentIdx];
+                $('fc-wordDutch').textContent = w.word_dutch || '---';
+                $('fc-wordSpanish').textContent = w.word_spanish || '---';
+                $('fc-phonetic').textContent = w.phonetic || '';
+                $('fc-current').textContent = currentIdx + 1;
+                $('fc-total').textContent = sessionWords.length;
+                $('fc-card').classList.remove('flipped');
+            }
+
+            /* ── Actions ── */
+            window.fcFlipCard = () => $('fc-card').classList.toggle('flipped');
+            window.fcNextCard = () => { if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); } };
+            window.fcPrevCard = () => { if (currentIdx > 0) { currentIdx--; fcUpdateUI(); } };
+            window.fcMarkKnown = () => { if (currentIdx < sessionWords.length - 1) { currentIdx++; fcUpdateUI(); } else { $('fc-modal').classList.add('visible'); } };
+            window.fcRepeatLater = () => { sessionWords.push(sessionWords[currentIdx]); window.fcNextCard(); };
+
+            /* ── Audio ── */
+            window.fcPlayAudio = function (e) {
+                e.stopPropagation();
+                const w = sessionWords[currentIdx];
+                if (w.audio_url && w.audio_url.trim()) {
+                    new Audio(w.audio_url).play().catch(() => fcTTS(w.word_dutch));
+                } else { fcTTS(w.word_dutch); }
+            };
+            const fcTTS = text => {
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'nl-NL';
+                speechSynthesis.speak(u);
+            };
+
+            /* ── Modal ── */
+            window.fcCloseModal = () => $('fc-modal').classList.remove('visible');
+            window.fcResetLesson = () => { window.fcCloseModal(); fcStartSession(); };
+
+        })();
+    </script>
+
+</body>
+
+</html>
