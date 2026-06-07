@@ -3,12 +3,12 @@ import { AppData, Room, Transaction } from './types';
 export const defaultRooms: Room[] = [
   {
     id: 1,
-    name: 'Hab 1',
+    name: 'Cuarto Yasmin',
     tenant: {
       name: 'Naima Benhir Gomez',
       phone: '',
       startDate: '2025-01-01',
-      rentAmount: 400,
+      rentAmount: 420,
       notes: '',
     },
     isOccupied: true,
@@ -18,12 +18,12 @@ export const defaultRooms: Room[] = [
   },
   {
     id: 2,
-    name: 'Hab 2',
+    name: 'Cuarto Padres',
     tenant: {
       name: 'Naihara Rebeca Navas Jimenez',
       phone: '',
       startDate: '2025-01-01',
-      rentAmount: 400,
+      rentAmount: 420,
       notes: '',
     },
     isOccupied: true,
@@ -33,12 +33,12 @@ export const defaultRooms: Room[] = [
   },
   {
     id: 3,
-    name: 'Hab 3',
+    name: 'Cuarto Hermanos',
     tenant: {
       name: 'Elina Loreta Ansevica',
       phone: '',
       startDate: '2026-01-20',
-      rentAmount: 400,
+      rentAmount: 420,
       notes: '',
     },
     isOccupied: true,
@@ -48,12 +48,12 @@ export const defaultRooms: Room[] = [
   },
   {
     id: 4,
-    name: 'Hab 4',
+    name: 'Cuarto Salón Grande',
     tenant: {
       name: 'Zofia Szejko',
       phone: '',
       startDate: '2025-01-01',
-      rentAmount: 400,
+      rentAmount: 420,
       notes: 'Fianza pagada a través de plataforma',
     },
     isOccupied: true,
@@ -63,12 +63,12 @@ export const defaultRooms: Room[] = [
   },
   {
     id: 5,
-    name: 'Hab 5',
+    name: 'Cuarto Salón Pequeño',
     tenant: {
       name: 'Amina Adday Brito',
       phone: '',
       startDate: '2026-04-01',
-      rentAmount: 400,
+      rentAmount: 390,
       notes: 'Nueva inquilina desde abril 2026',
     },
     isOccupied: true,
