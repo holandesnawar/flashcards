@@ -116,14 +116,16 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
                       room.depositPaid
                         ? room.depositReturned
                           ? 'bg-orange-100 text-orange-700'
-                          : 'bg-blue-100 text-blue-700'
+                          : 'bg-emerald-100 text-emerald-700'
                         : 'bg-red-100 text-red-700'
                     }`}>
                       {room.depositPaid
                         ? room.depositReturned
                           ? '↩ Fianza devuelta'
-                          : `Fianza: ${room.depositAmount > 0 ? formatCurrency(room.depositAmount) : 'Plataforma'}`
-                        : 'Sin fianza'}
+                          : room.depositAmount > 0
+                            ? `✓ Fianza ${formatCurrency(room.depositAmount)} · guardada`
+                            : '✓ Fianza (plataforma)'
+                        : '✗ Sin fianza'}
                     </span>
                   )}
                 </div>

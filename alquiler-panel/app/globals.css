@@ -47,3 +47,21 @@ input[type='number'] {
     @apply w-full border border-slate-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white;
   }
 }
+
+/* Mobile optimizations */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* Prevent text selection on interactive elements */
+button { user-select: none; -webkit-user-select: none; }
+
+/* Better scroll on iOS */
+.overflow-y-auto { -webkit-overflow-scrolling: touch; }
+
+/* Remove blue flash on tap (iOS) */
+* { -webkit-tap-highlight-color: rgba(0,0,0,0); }
+
+/* Ensure minimum tap target */
+button { min-height: 44px; }

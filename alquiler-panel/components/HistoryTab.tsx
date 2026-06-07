@@ -184,6 +184,43 @@ export default function HistoryTab({ data, onDataChange }: HistoryTabProps) {
         </button>
       </div>
 
+      {/* Monthly balance card */}
+      {selectedMonth !== 'all' && (
+        <div className="px-4 mb-3">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 text-white">
+            <p className="text-slate-300 text-xs font-medium mb-3 uppercase tracking-wide">Balance — {formatMonth(selectedMonth)}</p>
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-300">Alquileres</span>
+                <span className="text-emerald-400 font-medium">+{formatCurrency(filtered.filter(t => t.amount > 0 && t.category === 'alquiler').reduce((s,t) => s+t.amount, 0))}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-300">Extras (garaje/trastero)</span>
+                <span className="text-emerald-400 font-medium">+{formatCurrency(filtered.filter(t => t.amount > 0 && t.category === 'extra').reduce((s,t) => s+t.amount, 0))}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-300">Fianzas cobradas</span>
+                <span className="text-emerald-400 font-medium">+{formatCurrency(filtered.filter(t => t.amount > 0 && t.category === 'fianza').reduce((s,t) => s+t.amount, 0))}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-300">Gastos</span>
+                <span className="text-red-400 font-medium">{formatCurrency(filtered.filter(t => t.amount < 0 && t.category === 'gasto').reduce((s,t) => s+t.amount, 0))}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-300">Fianzas devueltas</span>
+                <span className="text-red-400 font-medium">{formatCurrency(filtered.filter(t => t.amount < 0 && t.category === 'fianza').reduce((s,t) => s+t.amount, 0))}</span>
+              </div>
+              <div className="border-t border-slate-600 pt-2 mt-2 flex justify-between">
+                <span className="font-bold text-white">Balance neto</span>
+                <span className={`font-bold text-lg ${totals.net >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {totals.net >= 0 ? '+' : ''}{formatCurrency(totals.net)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Transaction list */}
       <div className="px-4 space-y-2">
         {filtered.length === 0 ? (

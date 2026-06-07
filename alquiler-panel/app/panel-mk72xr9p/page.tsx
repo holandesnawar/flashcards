@@ -47,6 +47,16 @@ export default function PanelPage() {
     setAuthenticated(true);
   }, []);
 
+  // Simple bot/crawler protection
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // Block if no touch support and no mouse (likely a headless browser/bot)
+    const isHeadless = /HeadlessChrome|PhantomJS|SlimerJS|Puppeteer/i.test(navigator.userAgent);
+    if (isHeadless) {
+      document.body.innerHTML = '';
+    }
+  }, []);
+
   // Compute quick stats
   const occupiedCount = data?.rooms.filter(r => r.isOccupied).length ?? 0;
   const paidThisMonth = data?.payments.filter(p => p.month === currentMonth && p.paid).length ?? 0;
@@ -75,7 +85,7 @@ export default function PanelPage() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col max-w-lg mx-auto">
       {/* Top header */}
-      <header className="bg-gradient-to-r from-blue-900 to-slate-800 text-white px-4 pt-safe-top pb-4 flex-shrink-0 sticky top-0 z-40 shadow-lg">
+      <header className="bg-gradient-to-r from-blue-900 to-slate-800 text-white px-4 pt-10 pb-4 flex-shrink-0 sticky top-0 z-40 shadow-lg">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
