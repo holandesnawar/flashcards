@@ -18,9 +18,7 @@ export default function PanelPage() {
   const [data, setData] = useState<AppData | null>(null);
   const [currentMonth] = useState(getCurrentMonth());
 
-  // Load data from localStorage on mount
   useEffect(() => {
-    // Check session auth
     if (typeof window !== 'undefined') {
       const auth = sessionStorage.getItem(SESSION_KEY);
       if (auth === 'true') {
@@ -30,7 +28,6 @@ export default function PanelPage() {
     setData(loadData());
   }, []);
 
-  // Save data whenever it changes
   const handleDataChange = useCallback((newData: AppData) => {
     setData(newData);
     saveData(newData);
@@ -47,17 +44,14 @@ export default function PanelPage() {
     setAuthenticated(true);
   }, []);
 
-  // Simple bot/crawler protection
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    // Block if no touch support and no mouse (likely a headless browser/bot)
     const isHeadless = /HeadlessChrome|PhantomJS|SlimerJS|Puppeteer/i.test(navigator.userAgent);
     if (isHeadless) {
       document.body.innerHTML = '';
     }
   }, []);
 
-  // Compute quick stats
   const occupiedCount = data?.rooms.filter(r => r.isOccupied).length ?? 0;
   const paidThisMonth = data?.payments.filter(p => p.month === currentMonth && p.paid).length ?? 0;
   const totalCollected = data?.payments
@@ -84,7 +78,6 @@ export default function PanelPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col max-w-lg mx-auto">
-      {/* Top header */}
       <header className="bg-gradient-to-r from-blue-900 to-slate-800 text-white px-4 pt-10 pb-4 flex-shrink-0 sticky top-0 z-40 shadow-lg">
         <div className="flex items-center justify-between">
           <div>
@@ -106,7 +99,6 @@ export default function PanelPage() {
           </button>
         </div>
 
-        {/* Quick stats bar */}
         <div className="flex gap-3 mt-3">
           <div className="flex-1 bg-white/10 rounded-xl px-3 py-2">
             <p className="text-white text-base font-bold">{occupiedCount}/5</p>
@@ -127,7 +119,6 @@ export default function PanelPage() {
         </div>
       </header>
 
-      {/* Tab content */}
       <main className="flex-1 overflow-y-auto">
         {activeTab === 'habitaciones' && (
           <RoomsTab
@@ -151,7 +142,6 @@ export default function PanelPage() {
         )}
       </main>
 
-      {/* Bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex shadow-lg z-40 max-w-lg mx-auto pb-safe-bottom">
         {tabs.map(tab => (
           <button

@@ -25,14 +25,12 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
     let newPayments: MonthlyPayment[];
 
     if (existing) {
-      // Toggle paid status
       newPayments = data.payments.map(p =>
         p.roomId === room.id && p.month === currentMonth
           ? { ...p, paid: !p.paid, paidDate: !p.paid ? new Date().toISOString().split('T')[0] : undefined }
           : p
       );
     } else {
-      // Create new payment entry
       const newPayment: MonthlyPayment = {
         roomId: room.id,
         month: currentMonth,
@@ -60,7 +58,6 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
 
   return (
     <div className="px-4 py-4 pb-24 space-y-3">
-      {/* Summary bar */}
       <div className="card flex items-center justify-between">
         <div className="text-center flex-1">
           <p className="text-2xl font-bold text-slate-800">{occupiedCount}/5</p>
@@ -78,7 +75,6 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
         </div>
       </div>
 
-      {/* Room cards */}
       {data.rooms.map(room => {
         const payment = getPaymentForMonth(room.id, currentMonth);
         const isPaid = payment?.paid === true;
@@ -86,7 +82,6 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
         return (
           <div key={room.id} className="card">
             <div className="flex items-start gap-3">
-              {/* Status dot + room name */}
               <div className="flex-shrink-0 pt-0.5">
                 <div className={`w-3 h-3 rounded-full mt-1 ${room.isOccupied ? 'bg-emerald-500' : 'bg-slate-300'}`} />
               </div>
@@ -109,7 +104,6 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
                   </p>
                 )}
 
-                {/* Deposit badge */}
                 <div className="flex items-center gap-2 mt-2">
                   {room.isOccupied && (
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -132,7 +126,6 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
               </div>
             </div>
 
-            {/* Action buttons */}
             <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
               {room.isOccupied && (
                 <button
@@ -157,7 +150,6 @@ export default function RoomsTab({ data, currentMonth, onDataChange }: RoomsTabP
         );
       })}
 
-      {/* Edit Modal */}
       {editingRoom && (
         <RoomModal
           room={editingRoom}

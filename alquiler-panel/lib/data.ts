@@ -186,7 +186,6 @@ export function loadData(): AppData {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as AppData;
-      // Ensure all required fields exist (for migrations)
       return {
         ...defaultData,
         ...parsed,
